@@ -2,35 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\CountryService;
 
 class CountryController extends Controller
 {
+    protected $countryService;
+
+    public function __construct(CountryService $countryService)
+    {
+        $this->countryService = $countryService;
+    }
+
     public function index()
     {
-        try {
-
-            $response = Http::get('https://raw.githubusercontent.com/mledoze/countries/master/countries.json');
-
-            if ($response->successful()) {
-
-                $countries = $response->json();
-
-            } else {
-
-                $countries = [];
-
-            }
-
-        } catch (\Exception $e) {
-
-            $countries = [];
-
-        }
+        $countries = $this->countryService->getCountries();
 
         return view('countries.index', [
+
             'countries' => $countries,
-            'totalCountries' => count($countries)
+
+            'totalCountries' => $countries->count()
+
         ]);
     }
 }

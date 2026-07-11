@@ -31,6 +31,12 @@
         </li>
 
         <li class="nav-item mb-2">
+            <a href="{{ route('economy') }}" class="nav-link text-light">
+                📈 Economy
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
             <a href="{{ route('news') }}" class="nav-link text-light">
                 📰 News
             </a>
@@ -45,6 +51,12 @@
         <li class="nav-item mb-2">
             <a href="{{ route('comparison') }}" class="nav-link text-light">
                 📊 Comparison
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
+            <a href="{{ route('risk') }}" class="nav-link text-light">
+        ⚠️ Risk Analysis
             </a>
         </li>
 

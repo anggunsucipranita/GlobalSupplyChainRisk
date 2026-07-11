@@ -1,52 +1,158 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+@extends('layouts.auth')
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+@section('content')
+
+<div class="auth-wrapper">
+
+    <div class="auth-card">
+
+        <div class="logo-icon">
+            🌍
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <h1 class="logo-title">
+            GLOBAL <span>SUPPLY CHAIN</span>
+        </h1>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <p class="logo-sub">
+            Risk Intelligence Platform
+            <br>
+            Monitor Global Logistics & Business Risk
+        </p>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+        <div class="divider"></div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <h3 class="text-center mb-3">
+            Create Account
+        </h3>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+        <form method="POST" action="{{ route('register') }}">
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+            @csrf
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+            {{-- NAME --}}
+            <div class="mb-3">
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
+                <label class="form-label">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    name="name"
+                    class="form-control"
+                    placeholder="Enter your full name"
+                    value="{{ old('name') }}"
+                    required
+                    autofocus>
+
+                @error('name')
+                    <small class="text-danger">
+                        {{ $message }}
+                    </small>
+                @enderror
+
+            </div>
+
+            {{-- EMAIL --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter your email"
+                    value="{{ old('email') }}"
+                    required>
+
+                @error('email')
+                    <small class="text-danger">
+                        {{ $message }}
+                    </small>
+                @enderror
+
+            </div>
+
+            {{-- PASSWORD --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    class="form-control"
+                    placeholder="Create password"
+                    required>
+
+                @error('password')
+                    <small class="text-danger">
+                        {{ $message }}
+                    </small>
+                @enderror
+
+            </div>
+
+            {{-- CONFIRM PASSWORD --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password_confirmation"
+                    class="form-control"
+                    placeholder="Confirm password"
+                    required>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn-login">
+
+                Register
+
+            </button>
+
+        </form>
+
+        <div class="bottom-box">
+
+            <p class="mb-2">
+
+                Already have an account?
+
+            </p>
+
+            <a
+                href="{{ route('login') }}"
+                class="auth-link fw-bold">
+
+                Login Here
+
             </a>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
         </div>
-    </form>
-</x-guest-layout>
+
+        <div class="footer-text">
+
+            © {{ date('Y') }}
+
+            Global Supply Chain Risk Intelligence Platform
+
+        </div>
+
+    </div>
+
+</div>
+
+@endsection

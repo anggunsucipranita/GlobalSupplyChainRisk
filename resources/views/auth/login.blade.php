@@ -1,47 +1,227 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.auth')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('content')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+<div class="auth-wrapper">
+
+    <div class="auth-card">
+
+        <div class="logo-icon">
+            🌍
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <h1 class="logo-title">
+            GLOBAL <span>SUPPLY CHAIN</span>
+        </h1>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+        <p class="logo-sub">
+            Risk Intelligence Platform
+            <br>
+            Monitor Global Logistics & Business Risk
+        </p>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="divider"></div>
+
+        <h3 class="text-center mb-4">
+            Welcome Back
+        </h3>
+
+        <form method="POST" action="{{ route('login') }}">
+
+            @csrf
+
+            {{-- EMAIL --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Email Address
+
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter your email"
+                    value="{{ old('email') }}"
+                    required
+                    autofocus>
+
+                @error('email')
+
+                    <small class="text-danger">
+
+                        {{ $message }}
+
+                    </small>
+
+                @enderror
+
+            </div>
+
+            {{-- PASSWORD --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Password
+
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    class="form-control"
+                    placeholder="Enter your password"
+                    required>
+
+                @error('password')
+
+                    <small class="text-danger">
+
+                        {{ $message }}
+
+                    </small>
+
+                @enderror
+
+            </div>
+
+            {{-- REMEMBER --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div class="form-check">
+
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="remember"
+                        id="remember">
+
+                    <label
+                        class="form-check-label"
+                        for="remember">
+
+                        Remember Me
+
+                    </label>
+
+                </div>
+
+                @if (Route::has('password.request'))
+
+                    <a
+                        href="{{ route('password.request') }}"
+                        class="auth-link">
+
+                        Forgot Password?
+
+                    </a>
+
+                @endif
+
+            </div>
+
+            {{-- BUTTON --}}
+            <button
+                type="submit"
+                class="btn-login">
+
+                Login
+
+            </button>
+
+        </form>
+
+        {{-- REGISTER --}}
+        <div class="bottom-box text-center">
+
+            <p class="mb-2">
+
+                Don't have an account?
+
+            </p>
+
+            <a
+                href="{{ route('register') }}"
+                class="auth-link fw-bold">
+
+                Create Account
+
+            </a>
+
         </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
+        {{-- FEATURES --}}
+        <div class="feature-list">
+
+            <div class="feature-item">
+
+                <i class="bi bi-globe2"></i>
+
+                <h6>
+
+                    Global
+
+                </h6>
+
+                <p>
+
+                    Monitor Countries
+
+                </p>
+
+            </div>
+
+            <div class="feature-item">
+
+                <i class="bi bi-bar-chart-line"></i>
+
+                <h6>
+
+                    Analytics
+
+                </h6>
+
+                <p>
+
+                    Risk Dashboard
+
+                </p>
+
+            </div>
+
+            <div class="feature-item">
+
+                <i class="bi bi-shield-check"></i>
+
+                <h6>
+
+                    Security
+
+                </h6>
+
+                <p>
+
+                    Protected Access
+
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+        <div class="footer-text">
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            © {{ date('Y') }}
+
+            Global Supply Chain Risk Intelligence Platform
+
         </div>
-    </form>
-</x-guest-layout>
+
+    </div>
+
+</div>
+
+@endsection
