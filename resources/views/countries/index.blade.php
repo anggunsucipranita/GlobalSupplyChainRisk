@@ -28,15 +28,16 @@
 
         <div class="card-body">
 
-            <div class="text-center mb-3">
+            {{-- FLAG + COUNTRY --}}
+            <div class="text-center mb-4">
 
-                <div style="font-size:60px">
+                <img
+                src="https://flagcdn.com/w160/{{ strtolower($country['cca2']) }}.png"
+                alt="{{ $country['name']['common'] }}"
+                width="90"
+                class="rounded shadow mb-3">
 
-                    {{ $country['flag'] ?? '🏳️' }}
-
-                </div>
-
-                <h4 class="fw-bold text-info">
+                <h4 class="fw-bold text-info mb-1">
 
                     {{ $country['name']['common'] ?? '-' }}
 
@@ -70,21 +71,13 @@
 
             <p class="mb-2">
 
-                👥 <strong>Population :</strong>
-
-                {{ number_format($country['population'] ?? 0) }}
-
-            </p>
-
-            <p class="mb-2">
-
                 💱 <strong>Currency :</strong>
 
                 {{ array_key_first($country['currencies'] ?? []) }}
 
             </p>
 
-            <p class="mb-3">
+            <p class="mb-4">
 
                 🗣 <strong>Language :</strong>
 

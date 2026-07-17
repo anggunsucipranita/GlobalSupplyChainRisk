@@ -1,34 +1,75 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm border-bottom border-secondary">
+<nav class="navbar custom-navbar">
 
-    <div class="container-fluid">
+    <div class="navbar-left">
 
-        <a class="navbar-brand fw-bold text-light" href="/">
-            🌍 Global Supply Chain Risk
-        </a>
+        <div class="brand-area">
 
-        <div class="ms-auto d-flex align-items-center gap-3">
+            <h4 class="brand-title">
 
-            <span class="badge bg-success">
-                ● Online
-            </span>
+                🌍 Global Supply Chain Risk
 
-            <span class="text-light">
-                Hello, {{ Auth::user()->name }} 
-            </span>
+            </h4>
 
-            <form method="POST" action="{{ route('logout') }}" class="d-inline">
+            <small class="brand-subtitle">
 
-    @csrf
+                Real-Time Monitoring Dashboard
 
-    <button type="submit" class="btn btn-outline-light">
-
-        Logout
-
-    </button>
-
-</form>
+            </small>
 
         </div>
+
+    </div>
+
+    <div class="navbar-right">
+
+        <div class="status-online">
+
+            <span class="status-dot"></span>
+
+            Online
+
+        </div>
+
+        <div class="user-box">
+
+            <div class="user-avatar">
+
+                {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+
+            </div>
+
+            <div class="user-info">
+
+                <span class="welcome">
+
+                    Welcome
+
+                </span>
+
+                <strong>
+
+                    {{ Auth::user()->name }}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+        <form method="POST"
+              action="{{ route('logout') }}">
+
+            @csrf
+
+            <button class="logout-btn">
+
+                <i class="bi bi-box-arrow-right"></i>
+
+                Logout
+
+            </button>
+
+        </form>
 
     </div>
 

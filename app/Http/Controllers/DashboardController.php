@@ -79,7 +79,7 @@ class DashboardController extends Controller
 
             $region = $countryData['region'] ?? '-';
 
-            $population = $countryData['population'] ?? 0;
+            $population = null;
 
             $latitude = $countryData['latlng'][0] ?? 0;
 
@@ -92,6 +92,8 @@ class DashboardController extends Controller
             }
 
         }
+
+    
 
         /*
         ======================================================
@@ -200,11 +202,11 @@ class DashboardController extends Controller
 
                         foreach ($json[1] as $item) {
 
-                            if (!empty($item['value'])) {
+                           if (!is_null($item['value'])) {
 
                                 $economy[$key] = $item['value'];
 
-                                break;
+                                 break;
 
                             }
 
@@ -221,6 +223,20 @@ class DashboardController extends Controller
             }
 
         }
+
+         /****************************************
+        POPULATION
+        ****************************************/
+
+        if (!is_null($economy['population'])) {
+
+                 $population = $economy['population'];
+
+                    } else {
+
+        $population = $countryData['population'] ?? 0;
+
+                    }
 
         /*
         ======================================================

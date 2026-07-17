@@ -4,496 +4,281 @@
 
 <div class="container-fluid">
 
-<h2 class="mb-4 fw-bold text-light">
-    🌍 Global Supply Chain Risk Dashboard
-</h2>
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<div class="card bg-dark border-secondary shadow mb-4">
+        <div>
 
-    <div class="card-body">
+            <h2 class="fw-bold text-white mb-1">
+                Global Supply Chain Risk Dashboard
+            </h2>
 
-        <form method="GET" action="{{ route('dashboard') }}">
+            <p class="text-secondary mb-0">
+                Real-time monitoring of global supply chain conditions.
+            </p>
 
-            <label class="text-light fw-semibold mb-2">
+        </div>
 
-                🌍 Select Country
+        <div class="text-end">
 
-            </label>
+            <span class="badge bg-success px-3 py-2">
+                ● Live Monitoring
+            </span>
 
-            <select
-                name="country"
-                class="form-select"
-                onchange="this.form.submit()">
-
-                @foreach($countries as $country)
-
-                    <option
-                        value="{{ $country['cca3'] }}"
-                        {{ $selectedCountry == $country['cca3'] ? 'selected' : '' }}>
-
-                        {{ $country['flag'] ?? '🏳️' }}
-                        {{ $country['name']['common'] }}
-
-                    </option>
-
-                @endforeach
-
-            </select>
-
-        </form>
+        </div>
 
     </div>
 
-</div>
+    {{-- TOP CARD --}}
+    <div class="row g-4 mb-4">
 
-<div class="row g-4">
+        {{-- COUNTRY MONITORING --}}
+        <div class="col-lg-8">
 
-<div class="col-lg-8">
+            <div class="card shadow-lg h-100">
 
-<div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
 
-<div class="card-header fw-bold text-info">
+                    <h5 class="mb-0 fw-bold">
+                        🌍 Country Monitoring
+                    </h5>
 
-🌍 Country Overview
+                    <span class="badge bg-primary">
+                        Live
+                    </span>
 
-</div>
+                </div>
 
-<div class="card-body">
+                <div class="card-body">
 
-<div class="row">
+                    <form method="GET"
+                          action="{{ route('dashboard') }}">
 
-<div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold mb-2">
 
-<small class="text-secondary">
+                            Select Country
 
-Country
+                        </label>
 
-</small>
+                        <select
+                            name="country"
+                            class="form-select"
+                            onchange="this.form.submit()">
 
-<h4 class="text-light">
+                            @foreach($countries as $country)
 
-{{ $countryData['flag'] ?? '' }}
+                                <option
+                                    value="{{ $country['cca3'] }}"
+                                    {{ $selectedCountry == $country['cca3'] ? 'selected' : '' }}>
 
-{{ $countryName }}
+                                    {{ $country['flag'] ?? '🏳️' }}
+                                    {{ $country['name']['common'] }}
 
-</h4>
+                                </option>
 
-</div>
+                            @endforeach
 
-<div class="col-md-6 mb-3">
+                        </select>
 
-<small class="text-secondary">
+                    </form>
 
-Capital
+                    <form
+                        action="{{ route('watchlists.store') }}"
+                        method="POST"
+                        class="mt-3">
 
-</small>
+                        @csrf
 
-<h5 class="text-light">
+                        <input
+                            type="hidden"
+                            name="country_code"
+                            value="{{ $selectedCountry }}">
 
-{{ $capital }}
+                        <input
+                            type="hidden"
+                            name="country_name"
+                            value="{{ $countryName }}">
 
-</h5>
+                        <button class="btn btn-primary">
 
-</div>
+                            ⭐ Add To Favorite
 
-<div class="col-md-6 mb-3">
+                        </button>
 
-<small class="text-secondary">
+                    </form>
 
-Region
-
-</small>
-
-<h5 class="text-light">
-
-{{ $region }}
-
-</h5>
-
-</div>
-
-<div class="col-md-6 mb-3">
-
-<small class="text-secondary">
-
-Population
-
-</small>
-
-<h5 class="text-light">
-
-{{ number_format($population) }}
-
-</h5>
-
-</div>
-
-<div class="col-md-6 mb-3">
-
-<small class="text-secondary">
-
-GDP
-
-</small>
-
-<h5 class="text-warning">
-
-{{ $economy['gdp'] ? number_format($economy['gdp']) : '-' }}
-
-</h5>
-
-</div>
-
-<div class="col-md-6 mb-3">
-
-<small class="text-secondary">
-
-Inflation
-
-</small>
-
-<h5 class="text-warning">
-
-{{ $economy['inflation'] ?? '-' }} %
-
-</h5>
-
-</div>
-
-<div class="col-md-6 mb-3">
-
-<small class="text-secondary">
-
-Currency
-
-</small>
-
-<h5 class="text-info">
-
-{{ $currencyCode }}
-
-</h5>
-
-</div>
-
-<div class="col-md-6 mb-3">
-
-<small class="text-secondary">
-
-Exchange Rate
-
-</small>
-
-<h5 class="text-info">
-
-{{ $exchangeRate ?? '-' }}
-
-</h5>
-
-</div>
-
-<div class="col-md-4">
-
-<small class="text-secondary">
-
-🌡 Temperature
-
-</small>
-
-<h5 class="text-success">
-
-{{ $temperature }} °C
-
-</h5>
-
-</div>
-
-<div class="col-md-4">
-
-<small class="text-secondary">
-
-💨 Wind
-
-</small>
-
-<h5 class="text-success">
-
-{{ $windSpeed }} km/h
-
-</h5>
-
-</div>
-
-<div class="col-md-4">
-
-<small class="text-secondary">
-
-🌧 Rain
-
-</small>
-
-<h5 class="text-success">
-
-{{ $rain }} mm
-
-</h5>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-lg-4">
-
-<div class="card bg-dark border-secondary shadow h-100">
-
-<div class="card-header fw-bold text-danger">
-
-⚠ Overall Risk
-
-</div>
-
-<div class="card-body text-center">
-
-<h1 class="display-3 fw-bold text-{{ $badge }}">
-
-{{ $riskScore }}
-
-</h1>
-
-<span class="badge bg-{{ $badge }} fs-6">
-
-{{ $riskLevel }}
-
-</span>
-
-<hr class="border-secondary">
-
-<p class="text-light">
-
-{{ $recommendation }}
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="row mt-4">
-
-<div class="col-lg-12">
-
-<div class="card bg-dark border-secondary shadow">
-
-<div class="card-header fw-bold text-warning">
-
-📊 Risk Breakdown
-
-</div>
-
-<div class="card-body">
-
-<div class="row text-center">
-
-<div class="col">
-
-<h6 class="text-info">
-
-Weather
-
-</h6>
-
-<h3>
-
-{{ $weatherRisk }}
-
-</h3>
-
-</div>
-
-<div class="col">
-
-<h6 class="text-info">
-
-Economy
-
-</h6>
-
-<h3>
-
-{{ $economyRisk }}
-
-</h3>
-
-</div>
-
-<div class="col">
-
-<h6 class="text-info">
-
-Currency
-
-</h6>
-
-<h3>
-
-{{ $currencyRisk }}
-
-</h3>
-
-</div>
-
-<div class="col">
-
-<h6 class="text-info">
-
-News
-
-</h6>
-
-<h3>
-
-{{ $newsRisk }}
-
-</h3>
-
-</div>
-
-<div class="col">
-
-<h6 class="text-info">
-
-Port
-
-</h6>
-
-<h3>
-
-{{ $portRisk }}
-
-</h3>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="row mt-4">
-
-    {{-- CHART --}}
-    <div class="col-lg-8">
-
-        <div class="card bg-dark border-secondary shadow h-100">
-
-            <div class="card-header fw-bold text-info">
-
-                📈 Supply Chain Risk Analytics
+                </div>
 
             </div>
 
-            <div class="card-body">
+        </div>
 
-                <canvas id="riskChart" height="120"></canvas>
+        {{-- OVERALL RISK --}}
+        <div class="col-lg-4">
+
+            <div class="card shadow-lg h-100">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0 fw-bold">
+
+                        ⚠ Overall Risk
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body text-center">
+
+                    <h1 class="display-2 fw-bold text-{{ $badge }}">
+
+                        {{ $riskScore }}
+
+                    </h1>
+
+                    <span class="badge bg-{{ $badge }} fs-6 px-3 py-2">
+
+                        {{ $riskLevel }}
+
+                    </span>
+
+                    <hr>
+
+                    <p class="text-secondary">
+
+                        {{ $recommendation }}
+
+                    </p>
+
+                </div>
 
             </div>
 
         </div>
 
     </div>
+        {{-- RISK BREAKDOWN --}}
+    <div class="row g-4 mb-4">
 
-    {{-- NEWS --}}
-    <div class="col-lg-4">
+        <div class="col-12">
 
-        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card shadow-lg">
 
-            <div class="card-header fw-bold text-warning">
+                <div class="card-header">
 
-                📰 Latest News
+                    <h5 class="mb-0 fw-bold">
 
-            </div>
+                        📊 Risk Breakdown
 
-            <div class="card-body">
+                    </h5>
 
-                @forelse($news as $article)
+                </div>
 
-                    <div class="mb-3 pb-3 border-bottom border-secondary">
+                <div class="card-body">
 
-                        <h6 class="text-info">
+                    <div class="row text-center">
 
-                            {{ $article['title'] }}
+                        <div class="col-md">
 
-                        </h6>
+                            <div class="p-3 rounded">
 
-                        <small class="text-secondary">
+                                <h6 class="text-secondary mb-2">
 
-                            {{ \Illuminate\Support\Str::limit($article['description'],120) }}
+                                    🌦 Weather
 
-                        </small>
+                                </h6>
 
-                        <br>
+                                <h2 class="fw-bold">
 
-                        <a
-                            href="{{ $article['url'] }}"
-                            target="_blank"
-                            class="btn btn-sm btn-outline-info mt-2">
+                                    {{ $weatherRisk }}
 
-                            Read More
+                                </h2>
 
-                        </a>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md">
+
+                            <div class="p-3 rounded">
+
+                                <h6 class="text-secondary mb-2">
+
+                                    📈 Economy
+
+                                </h6>
+
+                                <h2 class="fw-bold">
+
+                                    {{ $economyRisk }}
+
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md">
+
+                            <div class="p-3 rounded">
+
+                                <h6 class="text-secondary mb-2">
+
+                                    💱 Currency
+
+                                </h6>
+
+                                <h2 class="fw-bold">
+
+                                    {{ $currencyRisk }}
+
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md">
+
+                            <div class="p-3 rounded">
+
+                                <h6 class="text-secondary mb-2">
+
+                                    📰 News
+
+                                </h6>
+
+                                <h2 class="fw-bold">
+
+                                    {{ $newsRisk }}
+
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md">
+
+                            <div class="p-3 rounded">
+
+                                <h6 class="text-secondary mb-2">
+
+                                    🚢 Port
+
+                                </h6>
+
+                                <h2 class="fw-bold">
+
+                                    {{ $portRisk }}
+
+                                </h2>
+
+                            </div>
+
+                        </div>
 
                     </div>
-
-                @empty
-
-                    <div class="alert alert-warning mb-0">
-
-                        No news available.
-
-                    </div>
-
-                @endforelse
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="row mt-4">
-
-    <div class="col-lg-12">
-
-        <div class="card bg-dark border-secondary shadow">
-
-            <div class="card-header fw-bold text-success">
-
-                🌍 World Monitoring Map
-
-            </div>
-
-            <div class="card-body p-0">
-
-                <div
-                    id="map"
-                    style="height:550px;">
 
                 </div>
 
@@ -503,7 +288,344 @@ Port
 
     </div>
 
-</div>
+    {{-- COUNTRY OVERVIEW --}}
+    <div class="row g-4 mb-4">
+
+        <div class="col-12">
+
+            <div class="card shadow-lg">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0 fw-bold">
+
+                        🌍 Country Overview
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Country
+
+                            </small>
+
+                            <h5 class="mt-2">
+
+                                {{ $countryData['flag'] ?? '' }}
+                                {{ $countryName }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Capital
+
+                            </small>
+
+                            <h5 class="mt-2">
+
+                                {{ $capital }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Region
+
+                            </small>
+
+                            <h5 class="mt-2">
+
+                                {{ $region }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Population
+
+                            </small>
+
+                            <h5 class="mt-2">
+
+                                {{ number_format($population) }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                GDP
+
+                            </small>
+
+                            <h5 class="mt-2 text-warning">
+
+                                {{ $economy['gdp'] ? number_format($economy['gdp']) : '-' }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Inflation
+
+                            </small>
+
+                            <h5 class="mt-2 text-warning">
+
+                                {{ $economy['inflation'] ?? '-' }} %
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Currency
+
+                            </small>
+
+                            <h5 class="mt-2 text-info">
+
+                                {{ $currencyCode }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <small class="text-secondary">
+
+                                Exchange Rate
+
+                            </small>
+
+                            <h5 class="mt-2 text-info">
+
+                                {{ $exchangeRate ?? '-' }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <small class="text-secondary">
+
+                                🌡 Temperature
+
+                            </small>
+
+                            <h5 class="mt-2 text-success">
+
+                                {{ $temperature }} °C
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <small class="text-secondary">
+
+                                💨 Wind
+
+                            </small>
+
+                            <h5 class="mt-2 text-success">
+
+                                {{ $windSpeed }} km/h
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <small class="text-secondary">
+
+                                🌧 Rain
+
+                            </small>
+
+                            <h5 class="mt-2 text-success">
+
+                                {{ $rain }} mm
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+        {{-- ANALYTICS & NEWS --}}
+    <div class="row g-4 mb-4">
+
+        {{-- ANALYTICS --}}
+        <div class="col-lg-8">
+
+            <div class="card shadow-lg h-100">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0 fw-bold">
+                        📈 Supply Chain Risk Analytics
+                    </h5>
+
+                    <span class="badge bg-info">
+                        Live Chart
+                    </span>
+
+                </div>
+
+                <div class="card-body">
+
+                    <canvas id="riskChart" height="110"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- NEWS --}}
+        <div class="col-lg-4">
+
+            <div class="card shadow-lg h-100">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0 fw-bold">
+                        📰 Latest News
+                    </h5>
+
+                    <span class="badge bg-warning text-dark">
+                        Updated
+                    </span>
+
+                </div>
+
+                <div class="card-body">
+
+                    @forelse($news as $article)
+
+                        <div class="pb-3 mb-3 border-bottom">
+
+                            <h6 class="fw-bold">
+
+                                {{ $article['title'] }}
+
+                            </h6>
+
+                            <small class="text-secondary d-block mb-2">
+
+                                {{ \Illuminate\Support\Str::limit($article['description'],100) }}
+
+                            </small>
+
+                            <a
+                                href="{{ $article['url'] }}"
+                                target="_blank"
+                                class="btn btn-sm btn-outline-primary">
+
+                                Read More →
+
+                            </a>
+
+                        </div>
+
+                    @empty
+
+                        <div class="alert alert-warning mb-0">
+
+                            No latest news available.
+
+                        </div>
+
+                    @endforelse
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+        {{-- WORLD MONITORING MAP --}}
+    <div class="row">
+
+        <div class="col-12">
+
+            <div class="card shadow-lg">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0 fw-bold">
+
+                        🌍 World Monitoring Map
+
+                    </h5>
+
+                    <span class="badge bg-success">
+
+                        Live Location
+
+                    </span>
+
+                </div>
+
+                <div class="card-body p-0">
+
+                    <div
+                        id="map"
+                        style="height:600px;border-radius:0 0 16px 16px;overflow:hidden;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -545,7 +667,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 data: @json($riskChart['data']),
 
-                borderWidth: 1
+                borderRadius: 10,
+
+                borderWidth: 0,
+
+                backgroundColor: [
+                    '#3B82F6',
+                    '#10B981',
+                    '#F59E0B',
+                    '#EF4444',
+                    '#8B5CF6'
+                ]
 
             }]
 
@@ -555,13 +687,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             responsive: true,
 
-            plugins: {
+            maintainAspectRatio: false,
+                        plugins: {
 
                 legend: {
 
                     labels: {
 
-                        color: '#ffffff'
+                        color: "#ffffff"
 
                     }
 
@@ -575,13 +708,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     ticks: {
 
-                        color: '#ffffff'
+                        color: "#ffffff"
 
                     },
 
                     grid: {
 
-                        color: '#444'
+                        color: "rgba(255,255,255,.08)"
 
                     }
 
@@ -595,13 +728,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     ticks: {
 
-                        color: '#ffffff'
+                        color: "#ffffff"
 
                     },
 
                     grid: {
 
-                        color: '#444'
+                        color: "rgba(255,255,255,.08)"
 
                     }
 
@@ -615,17 +748,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /*
     =====================================
-    LEAFLET
+    LEAFLET MAP
     =====================================
     */
 
-    var map = L.map('map').setView([
+    const map = L.map('map').setView([
 
         {{ $latitude }},
 
         {{ $longitude }}
 
-    ],5);
+    ], 5);
 
     L.tileLayer(
 
@@ -649,23 +782,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     .addTo(map)
 
-    .bindPopup(`
+    .bindPopup(
 
-        <b>{{ $countryName }}</b><br>
+        `<b>{{ $countryName }}</b><br>
 
-        🌡 Temperature :
-        {{ $temperature }} °C<br>
+        🌡 Temperature : {{ $temperature }} °C<br>
 
-        💨 Wind :
-        {{ $windSpeed }} km/h<br>
+        💨 Wind : {{ $windSpeed }} km/h<br>
 
-        🌧 Rain :
-        {{ $rain }} mm<br>
+        🌧 Rain : {{ $rain }} mm<br>
 
-        ⚠ Risk :
-        {{ $riskScore }} ({{ $riskLevel }})
+        ⚠ Risk : {{ $riskScore }} ({{ $riskLevel }})`
 
-    `)
+    )
 
     .openPopup();
 

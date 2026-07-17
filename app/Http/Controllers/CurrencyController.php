@@ -29,6 +29,38 @@ class CurrencyController extends Controller
 
         }
 
-        return view('currency.index', compact('currency'));
+        $chartLabels = [
+            'USD',
+            'EUR',
+            'GBP',
+            'JPY',
+            'AUD',
+            'IDR'
+        ];
+
+        $chartRates = [
+
+            $currency['rates']['USD'] ?? 0,
+
+            $currency['rates']['EUR'] ?? 0,
+
+            $currency['rates']['GBP'] ?? 0,
+
+            $currency['rates']['JPY'] ?? 0,
+
+            $currency['rates']['AUD'] ?? 0,
+
+            $currency['rates']['IDR'] ?? 0,
+
+        ];
+
+        return view(
+            'currency.index',
+            compact(
+                'currency',
+                'chartLabels',
+                'chartRates'
+            )
+        );
     }
 }
