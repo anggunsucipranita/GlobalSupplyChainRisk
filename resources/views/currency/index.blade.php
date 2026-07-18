@@ -20,19 +20,128 @@
 
 </div>
 
+<div class="row mb-4">
+
+    <div class="col-md-4">
+
+        <form method="GET">
+
+            <label class="form-label text-light">
+
+                🌍 Select Country
+
+            </label>
+
+            <select
+                name="country"
+                class="form-select"
+                onchange="this.form.submit()">
+
+                @foreach($countries as $country)
+
+                    <option
+                        value="{{ $country['cca3'] }}"
+                        {{ $selectedCountry==$country['cca3']?'selected':'' }}>
+
+                        {{ $country['name']['common'] }}
+
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </form>
+
+    </div>
+
+</div>
+
 @if(isset($currency['rates']))
 
-<div class="row g-3">
+<div class="row g-3 mb-4">
 
     <div class="col-md-3">
 
-        <div class="card bg-dark text-light border-secondary p-3">
+        <div class="card bg-dark border-secondary text-light p-3 shadow-sm">
 
-            <h6>USD → IDR</h6>
+            <small class="text-secondary">🌍 Country</small>
+
+            <h5 class="mt-2 mb-0">
+
+                {{ $countryData['name']['common'] ?? '-' }}
+
+            </h5>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-dark border-secondary text-light p-3 shadow-sm">
+
+            <small class="text-secondary">💰 Currency</small>
+
+            <h5 class="mt-2 mb-0">
+
+                {{ $currencyCode }}
+
+            </h5>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-dark border-secondary text-light p-3 shadow-sm">
+
+            <small class="text-secondary">💲 Exchange Rate</small>
+
+            <h5 class="mt-2 mb-0">
+
+                {{ $exchangeRate ?? '-' }}
+
+            </h5>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="card bg-dark border-secondary text-light p-3 shadow-sm">
+
+            <small class="text-secondary">🕒 Last Update</small>
+
+            <small class="d-block mt-2">
+
+                {{ $currency['time_last_update_utc'] ?? '-' }}
+
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card bg-dark text-light border-secondary p-3 shadow-sm">
+
+            <h6 class="text-warning">
+
+                USD → IDR
+
+            </h6>
 
             <h3
                 id="idrRate"
-                class="text-warning">
+                class="mb-0">
 
                 {{ number_format($currency['rates']['IDR'],2) }}
 
@@ -42,15 +151,19 @@
 
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
 
-        <div class="card bg-dark text-light border-secondary p-3">
+        <div class="card bg-dark text-light border-secondary p-3 shadow-sm">
 
-            <h6>USD → EUR</h6>
+            <h6 class="text-info">
+
+                USD → EUR
+
+            </h6>
 
             <h3
                 id="eurRate"
-                class="text-info">
+                class="mb-0">
 
                 {{ $currency['rates']['EUR'] }}
 
@@ -60,15 +173,19 @@
 
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
 
-        <div class="card bg-dark text-light border-secondary p-3">
+        <div class="card bg-dark text-light border-secondary p-3 shadow-sm">
 
-            <h6>USD → JPY</h6>
+            <h6 class="text-success">
+
+                USD → JPY
+
+            </h6>
 
             <h3
                 id="jpyRate"
-                class="text-success">
+                class="mb-0">
 
                 {{ $currency['rates']['JPY'] }}
 

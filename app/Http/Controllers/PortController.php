@@ -3,46 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\Port;
 
 class PortController extends Controller
 {
     public function index(Request $request)
     {
-        $ports = [];
-
-        try {
-
-            $response = Http::get('https://pocketworld.org/api/ports');
-
-if ($response->successful()) {
-
-    $ports = $response->json()['ports'];
-
-}
-
-
-
-        } catch (\Exception $e) {
-
-            $ports = [];
-
-        }
 
         $search = $request->search;
 
+
+        $ports = Port::query();
+
+
         if ($search) {
 
-            $ports = array_filter($ports, function ($port) use ($search) {
-
-                return
-                    stripos($port['name'] ?? '', $search) !== false ||
-                    stripos($port['country'] ?? '', $search) !== false;
-
-            });
+            $ports->where('name', 'like', "%$search%")
+                  ->orWhere('country', 'like', "%$search%")
+                  ->orWhere('city', 'like', "%$search%");
 
         }
 
-        return view('ports.index', compact('ports', 'search'));
+
+        $ports = $ports->get();
+
+
+        return view('ports.index', compact(
+            'ports',
+            'search'
+        ));
+
     }
 }

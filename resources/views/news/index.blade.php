@@ -21,6 +21,7 @@
 
     </div>
 
+
     {{-- SEARCH --}}
     <form method="GET" class="mb-4">
 
@@ -30,8 +31,8 @@
                 type="text"
                 name="search"
                 class="form-control"
-                placeholder="Search country or topic... (Indonesia, China, Trade, Shipping, Economy)"
-                value="{{ $keyword }}">
+                placeholder="Search country or topic..."
+                value="{{ $keyword ?? '' }}">
 
             <button
                 class="btn btn-primary"
@@ -47,21 +48,27 @@
 
     </form>
 
-    @if(count($news))
+
+    @if($news->count())
+
 
     <div class="row">
 
+
         @foreach($news as $item)
+
 
         <div class="col-lg-6 mb-4">
 
+
             <div class="card bg-dark border-secondary shadow h-100">
 
+
                 {{-- IMAGE --}}
-                @if(!empty($item['image']))
+                @if($item->image)
 
                     <img
-                        src="{{ $item['image'] }}"
+                        src="{{ $item->image }}"
                         class="card-img-top"
                         style="height:220px;object-fit:cover;">
 
@@ -74,43 +81,61 @@
 
                 @endif
 
+
+
                 <div class="card-body d-flex flex-column">
 
-                    {{-- SOURCE --}}
+
+                    {{-- SOURCE + DATE --}}
                     <div class="d-flex justify-content-between mb-3">
+
 
                         <small class="text-info fw-semibold">
 
-                            📰 {{ $item['source']['name'] ?? 'Unknown Source' }}
+                            📰 {{ $item->source ?? 'Unknown Source' }}
 
                         </small>
+
 
                         <small class="text-secondary">
 
-                            {{ \Carbon\Carbon::parse($item['publishedAt'])->format('d M Y H:i') }}
+                            {{ $item->published_at
+                                ? $item->published_at->format('d M Y H:i')
+                                : '-'
+                            }}
 
                         </small>
 
+
                     </div>
+
+
 
                     {{-- TITLE --}}
                     <h5 class="fw-bold text-light mb-3">
 
-                        {{ $item['title'] }}
+                        {{ $item->title }}
 
                     </h5>
+
+
 
                     {{-- DESCRIPTION --}}
                     <p class="text-secondary flex-grow-1">
 
-                        {{ \Illuminate\Support\Str::limit($item['description'],150) }}
+                        {{ \Illuminate\Support\Str::limit($item->description,150) }}
 
                     </p>
+
+
+
 
                     {{-- SENTIMENT --}}
                     <div class="mb-3">
 
-                        @if($item['analysis']['sentiment']=="Positive")
+
+                        @if($item->sentiment == "Positive")
+
 
                             <span class="badge bg-success">
 
@@ -118,7 +143,9 @@
 
                             </span>
 
-                        @elseif($item['analysis']['sentiment']=="Negative")
+
+                        @elseif($item->sentiment == "Negative")
+
 
                             <span class="badge bg-danger">
 
@@ -126,7 +153,9 @@
 
                             </span>
 
+
                         @else
+
 
                             <span class="badge bg-warning text-dark">
 
@@ -134,20 +163,28 @@
 
                             </span>
 
+
                         @endif
 
+
                     </div>
+
+
+
 
                     {{-- SCORE --}}
                     <div class="row text-center mb-3">
 
+
                         <div class="col-4">
+
 
                             <h5 class="text-success mb-1">
 
-                                {{ $item['analysis']['positive'] }}
+                                {{ $item->positive }}
 
                             </h5>
+
 
                             <small class="text-secondary">
 
@@ -155,15 +192,20 @@
 
                             </small>
 
+
                         </div>
+
+
 
                         <div class="col-4">
 
+
                             <h5 class="text-danger mb-1">
 
-                                {{ $item['analysis']['negative'] }}
+                                {{ $item->negative }}
 
                             </h5>
+
 
                             <small class="text-secondary">
 
@@ -171,15 +213,20 @@
 
                             </small>
 
+
                         </div>
+
+
 
                         <div class="col-4">
 
+
                             <h5 class="text-info mb-1">
 
-                                {{ $item['analysis']['sentiment'] }}
+                                {{ $item->sentiment }}
 
                             </h5>
+
 
                             <small class="text-secondary">
 
@@ -187,44 +234,70 @@
 
                             </small>
 
+
                         </div>
+
 
                     </div>
 
+
+
+
                     {{-- BUTTON --}}
                     <a
-                        href="{{ $item['url'] }}"
+                        href="{{ $item->url }}"
                         target="_blank"
                         class="btn btn-primary w-100">
+
 
                         <i class="bi bi-box-arrow-up-right"></i>
 
                         Read Full Article
 
+
                     </a>
+
 
                 </div>
 
+
             </div>
 
+
         </div>
+
 
         @endforeach
 
+
     </div>
+
+
+    {{-- PAGINATION --}}
+    <div class="mt-4">
+
+        {{ $news->links() }}
+
+    </div>
+
+
 
     @else
 
-        <div class="alert alert-warning">
 
-            <i class="bi bi-exclamation-circle"></i>
+    <div class="alert alert-warning">
 
-            No news found.
+        <i class="bi bi-exclamation-circle"></i>
 
-        </div>
+        No news found.
+
+    </div>
+
 
     @endif
 
+
 </div>
+
 
 @endsection

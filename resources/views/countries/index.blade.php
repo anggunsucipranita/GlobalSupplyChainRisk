@@ -20,8 +20,6 @@
 
 @forelse($countries as $country)
 
-@if(is_array($country))
-
 <div class="col-lg-4 col-md-6 country-card">
 
     <div class="card bg-dark text-light border-secondary shadow h-100">
@@ -32,20 +30,20 @@
             <div class="text-center mb-4">
 
                 <img
-                src="https://flagcdn.com/w160/{{ strtolower($country['cca2']) }}.png"
-                alt="{{ $country['name']['common'] }}"
-                width="90"
-                class="rounded shadow mb-3">
+                    src="https://flagcdn.com/w160/{{ strtolower($country->cca2) }}.png"
+                    alt="{{ $country->country_name }}"
+                    width="90"
+                    class="rounded shadow mb-3">
 
                 <h4 class="fw-bold text-info mb-1">
 
-                    {{ $country['name']['common'] ?? '-' }}
+                    {{ $country->country_name }}
 
                 </h4>
 
                 <small class="text-secondary">
 
-                    {{ $country['cca3'] ?? '-' }}
+                    {{ $country->cca3 }}
 
                 </small>
 
@@ -57,7 +55,7 @@
 
                 🏛 <strong>Capital :</strong>
 
-                {{ $country['capital'][0] ?? '-' }}
+                {{ $country->capital ?? '-' }}
 
             </p>
 
@@ -65,7 +63,7 @@
 
                 🌍 <strong>Region :</strong>
 
-                {{ $country['region'] ?? '-' }}
+                {{ $country->region ?? '-' }}
 
             </p>
 
@@ -73,7 +71,7 @@
 
                 💱 <strong>Currency :</strong>
 
-                {{ array_key_first($country['currencies'] ?? []) }}
+                {{ $country->currency ?? '-' }}
 
             </p>
 
@@ -81,12 +79,12 @@
 
                 🗣 <strong>Language :</strong>
 
-                {{ implode(', ', array_values($country['languages'] ?? [])) }}
+                {{ $country->language ?? '-' }}
 
             </p>
 
             <a
-                href="{{ route('dashboard',['country'=>$country['cca3']]) }}"
+                href="{{ route('dashboard', ['country' => $country->cca3]) }}"
                 class="btn btn-outline-info w-100">
 
                 View Dashboard
@@ -98,8 +96,6 @@
     </div>
 
 </div>
-
-@endif
 
 @empty
 
@@ -123,21 +119,21 @@
 
 <script>
 
-document.addEventListener("DOMContentLoaded",function(){
+document.addEventListener("DOMContentLoaded", function () {
 
-    const search=document.getElementById("searchCountry");
+    const search = document.getElementById("searchCountry");
 
-    const cards=document.querySelectorAll(".country-card");
+    const cards = document.querySelectorAll(".country-card");
 
-    search.addEventListener("keyup",function(){
+    search.addEventListener("keyup", function () {
 
-        let keyword=this.value.toLowerCase();
+        let keyword = this.value.toLowerCase();
 
-        cards.forEach(function(card){
+        cards.forEach(function (card) {
 
-            let text=card.innerText.toLowerCase();
+            let text = card.innerText.toLowerCase();
 
-            card.style.display=text.includes(keyword) ? "" : "none";
+            card.style.display = text.includes(keyword) ? "" : "none";
 
         });
 

@@ -7,17 +7,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <h2 class="fw-bold text-light">
-
             ⚓ Port Management
-
         </h2>
 
-        <a
-            href="{{ route('admin.ports.create') }}"
-            class="btn btn-success">
-
+        <a href="{{ route('admin.ports.create') }}"
+           class="btn btn-success">
             ➕ Add Port
-
         </a>
 
     </div>
@@ -25,9 +20,7 @@
     @if(session('success'))
 
         <div class="alert alert-success">
-
             {{ session('success') }}
-
         </div>
 
     @endif
@@ -35,9 +28,7 @@
     <div class="card bg-dark border-secondary">
 
         <div class="card-header text-info fw-bold">
-
             Port List
-
         </div>
 
         <div class="card-body">
@@ -55,6 +46,12 @@
                         <th>Country</th>
 
                         <th>City</th>
+
+                        <th>Latitude</th>
+
+                        <th>Longitude</th>
+
+                        <th>Size</th>
 
                         <th>Status</th>
 
@@ -78,6 +75,12 @@
 
                         <td>{{ $port->city }}</td>
 
+                        <td>{{ $port->latitude }}</td>
+
+                        <td>{{ $port->longitude }}</td>
+
+                        <td>{{ ucfirst($port->size) }}</td>
+
                         <td>
 
                             <span class="badge bg-success">
@@ -90,25 +93,22 @@
 
                         <td>
 
-                            <a
-                                href="{{ route('admin.ports.edit',$port->id) }}"
-                                class="btn btn-warning btn-sm">
+                            <a href="{{ route('admin.ports.edit', $port->id) }}"
+                               class="btn btn-warning btn-sm">
 
                                 Edit
 
                             </a>
 
-                            <form
-                                action="{{ route('admin.ports.destroy',$port->id) }}"
-                                method="POST"
-                                style="display:inline;">
+                            <form action="{{ route('admin.ports.destroy', $port->id) }}"
+                                  method="POST"
+                                  style="display:inline;">
 
                                 @csrf
                                 @method('DELETE')
 
-                                <button
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Delete this port?')">
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Delete this port?')">
 
                                     Delete
 
@@ -124,7 +124,7 @@
 
                     <tr>
 
-                        <td colspan="6" class="text-center">
+                        <td colspan="9" class="text-center">
 
                             No Port Found
 

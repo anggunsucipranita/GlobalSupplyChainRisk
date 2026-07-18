@@ -384,7 +384,7 @@
 
                             <h5 class="mt-2 text-warning">
 
-                                {{ $economy['gdp'] ? number_format($economy['gdp']) : '-' }}
+                                {{ $economy->gdp ? number_format($economy->gdp) : '-' }}
 
                             </h5>
 

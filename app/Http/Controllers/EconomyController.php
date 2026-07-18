@@ -2,83 +2,131 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Country;
+use App\Models\Economy;
 
 class EconomyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $country = request('country', 'IDN');
+
+        $country = strtoupper(
+            $request->country ?? 'IDN'
+        );
+
+
+        /*
+        ======================================================
+        COUNTRY LIST
+        ======================================================
+        */
 
         try {
 
-    $response = Http::get(
-        'https://raw.githubusercontent.com/mledoze/countries/master/countries.json'
-    );
+            $response = Http::timeout(20)->get(
+                'https://raw.githubusercontent.com/mledoze/countries/master/countries.json'
+            );
 
-    $countries = collect($response->json())
-        ->sortBy('name.common')
-        ->values();
 
-    } catch (\Exception $e) {
+            if ($response->successful()) {
 
-    $countries = collect();
+                $countries = collect($response->json())
+                    ->sortBy('name.common')
+                    ->values();
 
-    }
+            } else {
 
-        $indicators = [
-            "gdp" => "NY.GDP.MKTP.CD",
-            "inflation" => "FP.CPI.TOTL.ZG",
-            "population" => "SP.POP.TOTL",
-            "export" => "NE.EXP.GNFS.CD",
-            "import" => "NE.IMP.GNFS.CD"
-        ];
-
-        $economy = [];
-
-        foreach ($indicators as $key => $indicator) {
-
-            try {
-
-                $response = Http::timeout(15)->get(
-                    "https://api.worldbank.org/v2/country/{$country}/indicator/{$indicator}?format=json&per_page=10"
-                );
-
-                $economy[$key] = null;
-
-                if ($response->successful()) {
-
-                    $data = $response->json();
-
-                    if (isset($data[1])) {
-
-                        foreach ($data[1] as $item) {
-
-                            if (!is_null($item['value'])) {
-
-                                $economy[$key] = $item['value'];
-                                break;
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            } catch (\Exception $e) {
-
-                $economy[$key] = null;
+                $countries = collect();
 
             }
 
+
+        } catch (\Exception $e) {
+
+            $countries = collect();
+
         }
 
-        return view('economy.index', compact(
-        'economy',
-        'country',
-        'countries'
-            ));
+
+
+        /*
+        ======================================================
+        ECONOMY CACHE DATABASE
+        ======================================================
+        */
+
+
+        $economy = null;
+
+
+        $countryData = Country::where(
+            'cca3',
+            $country
+        )->first();
+
+
+
+        if ($countryData) {
+
+
+            $economy = Economy::where(
+                'country_id',
+                $countryData->id
+            )->first();
+
+
+        }
+
+
+
+        /*
+        ======================================================
+        DEFAULT VALUE
+        ======================================================
+        */
+
+
+        if (!$economy) {
+
+
+            $economy = (object)[
+
+                'gdp' => null,
+
+                'inflation' => null,
+
+                'population' => null,
+
+                'export' => null,
+
+                'import' => null,
+
+            ];
+
+
+        }
+
+
+
+        return view('economy.index',[
+
+
+            'economy' => $economy,
+
+
+            'country' => $country,
+
+
+            'countries' => $countries,
+
+
+            'countryData' => $countryData
+
+
+        ]);
+
+
     }
 }

@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\Country;
+use App\Services\RiskScoreService;
+use App\Services\WeatherService;
+use App\Models\NewsCache;
+use App\Services\CurrencyService;
+use App\Models\Economy;
 
 class DashboardController extends Controller
 {
@@ -17,6 +23,8 @@ class DashboardController extends Controller
         */
 
         $selectedCountry = strtoupper($request->country ?? 'IDN');
+
+        $riskService = new RiskScoreService();
 
         $countries = collect();
 
@@ -93,234 +101,112 @@ class DashboardController extends Controller
 
         }
 
+        /*
+======================================================
+WEATHER CACHE SERVICE
+======================================================
+*/
+
+$weather = [
+
+    'temperature' => 0,
+
+    'wind' => 0,
+
+    'rain' => 0,
+
+    'weather' => '-'
+
+];
+
+
+$weatherService = new WeatherService();
+
+
+if ($countryData) {
+
+    $weather = $weatherService->getWeather($countryData);
+
+}
+
+
+$temperature = $weather['temperature'] ?? 0;
+
+$windSpeed = $weather['wind'] ?? 0;
+
+$rain = $weather['rain'] ?? 0;
     
 
-        /*
-        ======================================================
-        WEATHER API (Open-Meteo)
-        ======================================================
-        */
+        
+        $economy = null;
 
-        $weather = [];
+if ($countryData) {
 
-        $temperature = null;
+    $country = Country::where('cca3', $selectedCountry)->first();
 
-        $windSpeed = null;
+    if ($country) {
 
-        $rain = null;
+        $economy = Economy::where(
+            'country_id',
+            $country->id
+        )->first();
 
-        try {
+    }
 
-            $response = Http::timeout(20)->get(
-                'https://api.open-meteo.com/v1/forecast',
-                [
+}
 
-                    'latitude' => $latitude,
+if (!$economy) {
 
-                    'longitude' => $longitude,
+    $economy = (object)[
 
-                    'current' => 'temperature_2m,wind_speed_10m,rain'
+        'gdp' => null,
 
-                ]
-            );
+        'inflation' => null,
 
-            if ($response->successful()) {
+        'population' => 0,
 
-                $weather = $response->json();
+        'export' => null,
 
-                $temperature = $weather['current']['temperature_2m'] ?? null;
+        'import' => null,
 
-                $windSpeed = $weather['current']['wind_speed_10m'] ?? null;
+    ];
 
-                $rain = $weather['current']['rain'] ?? null;
+}
 
-            }
+$population = $economy->population ?? 0;
 
-        } catch (\Exception $e) {
+       /*
+======================================================
+CURRENCY CACHE
+======================================================
+*/
 
-            $weather = [];
+$currencyService = new CurrencyService();
 
-        }
+$currency = [];
 
-        /*
-        ======================================================
-        WORLD BANK API
-        ======================================================
-        */
+$exchangeRate = null;
 
-        $economy = [
 
-            'gdp' => null,
+if ($countryData) {
 
-            'inflation' => null,
+    $currency = $currencyService->getCurrency($countryData);
 
-            'population' => null,
+    $exchangeRate = $currency['rate'] ?? null;
 
-            'export' => null,
-
-            'import' => null,
-
-        ];
-
-        $indicators = [
-
-            'gdp'        => 'NY.GDP.MKTP.CD',
-
-            'inflation' => 'FP.CPI.TOTL.ZG',
-
-            'population'=> 'SP.POP.TOTL',
-
-            'export'    => 'NE.EXP.GNFS.CD',
-
-            'import'    => 'NE.IMP.GNFS.CD',
-
-        ];
-
-        foreach ($indicators as $key => $indicator) {
-
-            try {
-
-                $response = Http::timeout(20)->get(
-
-                    "https://api.worldbank.org/v2/country/{$selectedCountry}/indicator/{$indicator}",
-
-                    [
-
-                        'format' => 'json',
-
-                        'per_page' => 20
-
-                    ]
-
-                );
-
-                if ($response->successful()) {
-
-                    $json = $response->json();
-
-                    if (isset($json[1])) {
-
-                        foreach ($json[1] as $item) {
-
-                           if (!is_null($item['value'])) {
-
-                                $economy[$key] = $item['value'];
-
-                                 break;
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            } catch (\Exception $e) {
-
-                $economy[$key] = null;
-
-            }
-
-        }
-
-         /****************************************
-        POPULATION
-        ****************************************/
-
-        if (!is_null($economy['population'])) {
-
-                 $population = $economy['population'];
-
-                    } else {
-
-        $population = $countryData['population'] ?? 0;
-
-                    }
+}
 
         /*
-        ======================================================
-        EXCHANGE RATE API
-        ======================================================
-        */
+======================================================
+NEWS CACHE
+======================================================
+*/
 
-        $currency = [];
+$news = NewsCache::latest('published_at')
+        ->take(5)
+        ->get();
 
-        $exchangeRate = null;
-
-        try {
-
-            $response = Http::timeout(20)
-                ->get('https://open.er-api.com/v6/latest/USD');
-
-            if ($response->successful()) {
-
-                $currency = $response->json();
-
-                if (
-
-                    $currencyCode != '-' &&
-
-                    isset($currency['rates'][$currencyCode])
-
-                ) {
-
-                    $exchangeRate = $currency['rates'][$currencyCode];
-
-                }
-
-            }
-
-        } catch (\Exception $e) {
-
-            $currency = [];
-
-            $exchangeRate = null;
-
-        }
-
-        /*
-        ======================================================
-        GNEWS API
-        ======================================================
-        */
-
-        $news = [];
-
-        $newsCount = 0;
-
-        try {
-
-            $response = Http::timeout(20)->get(
-                'https://gnews.io/api/v4/search',
-                [
-
-                    'q' => $countryName . ' logistics OR economy OR trade',
-
-                    'lang' => 'en',
-
-                    'max' => 5,
-
-                    'token' => env('GNEWS_API_KEY')
-
-                ]
-            );
-
-            if ($response->successful()) {
-
-                $news = $response->json()['articles'] ?? [];
-
-                $newsCount = count($news);
-
-            }
-
-        } catch (\Exception $e) {
-
-            $news = [];
-
-            $newsCount = 0;
-
-        }
+$newsCount = $news->count();
 
         /*
         ======================================================
@@ -396,23 +282,23 @@ class DashboardController extends Controller
 
         // Inflation Risk
 
-        if (is_null($economy['inflation'])) {
+        if (is_null($economy->inflation)) {
 
-            $economyRisk = 30;
+    $economyRisk = 30;
 
-        } elseif ($economy['inflation'] <= 3) {
+} elseif ($economy->inflation <= 3) {
 
-            $economyRisk = 15;
+    $economyRisk = 15;
 
-        } elseif ($economy['inflation'] <= 6) {
+} elseif ($economy->inflation <= 6) {
 
-            $economyRisk = 45;
+    $economyRisk = 45;
 
-        } else {
+} else {
 
-            $economyRisk = 80;
+    $economyRisk = 80;
 
-        }
+}
 
         // Currency Risk
 
@@ -478,47 +364,100 @@ class DashboardController extends Controller
 
         }
 
+        $country = Country::where('cca3', $selectedCountry)->first();
+
+if ($country) {
+
+    $risk = $riskService->updateRisk(
+
+        $country,
+
+        $weatherRisk,
+
+        $economyRisk,
+
+        $currencyRisk,
+
+        $newsRisk,
+
+        $portRisk
+
+    );
+
+}
+
         /*
         ======================================================
         FINAL RISK SCORE
         ======================================================
         */
 
-        $riskScore = round(
+        $risk = $country ? $country->riskScore : null;
 
-            ($weatherRisk * 0.30) +
-            ($economyRisk * 0.20) +
-            ($currencyRisk * 0.10) +
-            ($newsRisk * 0.25) +
-            ($portRisk * 0.15)
+$badge = "secondary";
 
-        );
+$riskScore = 0;
 
-        if ($riskScore <= 30) {
+$riskLevel = "Unknown";
 
-            $riskLevel = "Low Risk";
+$recommendation = "-";
+
+
+if ($country) {
+
+    $risk = $country->riskScore;
+
+}
+
+
+if ($risk) {
+
+    $weatherRisk = $risk->weather_risk;
+
+    $economyRisk = $risk->economy_risk;
+
+    $currencyRisk = $risk->currency_risk;
+
+    $newsRisk = $risk->news_risk;
+
+    $portRisk = $risk->port_risk;
+
+    $riskScore = $risk->overall_risk;
+
+    $riskLevel = $risk->risk_level . ' Risk';
+
+
+    switch ($riskLevel) {
+
+        case "Low Risk":
 
             $badge = "success";
 
             $recommendation = "Import can continue safely.";
 
-        } elseif ($riskScore <= 60) {
+            break;
 
-            $riskLevel = "Medium Risk";
+
+        case "Medium Risk":
 
             $badge = "warning";
 
             $recommendation = "Import can continue with monitoring.";
 
-        } else {
+            break;
 
-            $riskLevel = "High Risk";
+
+        case "High Risk":
 
             $badge = "danger";
 
             $recommendation = "Delay shipment until conditions improve.";
 
-        }
+            break;
+
+    }
+
+}
 
         /*
         ======================================================
