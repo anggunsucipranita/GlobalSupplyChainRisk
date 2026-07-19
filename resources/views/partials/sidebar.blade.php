@@ -136,7 +136,7 @@
             <a href="{{ route('admin.ports') }}"
                class="nav-link {{ request()->routeIs('admin.ports') ? 'active' : '' }}">
                 <i class="bi bi-geo-alt-fill"></i>
-                <span>Port Management</span>
+                <span>Port Dataset</span>
             </a>
         </li>
 
@@ -144,7 +144,7 @@
             <a href="{{ route('admin.articles') }}"
                class="nav-link {{ request()->routeIs('admin.articles') ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-text-fill"></i>
-                <span>Articles</span>
+                <span>Articles Analisis</span>
             </a>
         </li>
 

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
 <head>
 
     <meta charset="UTF-8">
@@ -18,6 +21,7 @@
     @stack('styles')
 
 </head>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <body>
 

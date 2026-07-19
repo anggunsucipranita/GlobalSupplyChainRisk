@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Watchlist;
+use App\Models\Port;
+use App\Models\Article;
 use Illuminate\Support\Facades\Http;
 
 class AdminDashboardController extends Controller
@@ -36,9 +38,9 @@ class AdminDashboardController extends Controller
 
         }
 
-        // Dummy dulu (nanti kita ganti saat CRUD selesai)
-        $totalPorts = 0;
-        $totalArticles = 0;
+        // Ambil jumlah data dari database
+        $totalPorts = Port::count();
+        $totalArticles = Article::count();
 
         return view('admin.dashboard', compact(
             'totalUsers',

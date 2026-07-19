@@ -15,6 +15,9 @@
         placeholder="Search port or country...">
 
 </div>
+<div id="map"
+style="height:500px;border-radius:15px;"
+class="mb-4"></div>
 
 <div class="row g-3">
 
@@ -27,48 +30,33 @@
         <div class="card-body">
 
             <h5 class="text-info">
+    🚢 {{ $port->name }}
+</h5>
 
-                🚢 {{ $port['name'] }}
+<hr>
 
-            </h5>
+<p class="mb-2">
+    🌍 <strong>Country :</strong>
+    {{ $port->country }}
+</p>
 
-            <hr>
+<p class="mb-2">
+    📍 <strong>Latitude :</strong>
+    {{ $port->latitude }}
+</p>
 
-            <p class="mb-2">
+<p class="mb-2">
+    📍 <strong>Longitude :</strong>
+    {{ $port->longitude }}
+</p>
 
-                🌍 <strong>Country :</strong>
+<p class="mb-0">
+    ⚓ <strong>Port Size :</strong>
 
-                {{ $port['country'] }}
-
-            </p>
-
-            <p class="mb-2">
-
-                📍 <strong>Latitude :</strong>
-
-                {{ $port['lat'] }}
-
-            </p>
-
-            <p class="mb-2">
-
-                📍 <strong>Longitude :</strong>
-
-                {{ $port['lng'] }}
-
-            </p>
-
-            <p class="mb-0">
-
-                ⚓ <strong>Port Size :</strong>
-
-                <span class="badge bg-primary">
-
-                    {{ ucfirst($port['size']) }}
-
-                </span>
-
-            </p>
+    <span class="badge bg-primary">
+        {{ ucfirst($port->size) }}
+    </span>
+</p>
 
         </div>
 
@@ -101,24 +89,102 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const search = document.getElementById("searchPort");
-
     const cards = document.querySelectorAll(".port-card");
 
     search.addEventListener("keyup", function () {
 
         const keyword = this.value.toLowerCase();
 
-        cards.forEach(function(card){
+        let firstVisible = null;
+
+        cards.forEach(function(card, index){
 
             const text = card.innerText.toLowerCase();
+            const match = text.includes(keyword);
 
-            card.style.display = text.includes(keyword) ? "" : "none";
+            card.style.display = match ? "" : "none";
+
+            if(match && firstVisible === null){
+                firstVisible = index;
+            }
 
         });
+
+        const matched = [];
+
+window.portInfo.forEach(function(port){
+
+    if(port.text.includes(keyword)){
+        matched.push(port.marker);
+    }
+
+});
+
+if(matched.length == 1){
+
+    window.map.flyTo(matched[0].getLatLng(),6,{
+        animate:true,
+        duration:1
+    });
+
+    matched[0].openPopup();
+
+}
+else if(matched.length > 1){
+
+    const group = L.featureGroup(matched);
+
+    window.map.fitBounds(group.getBounds(),{
+        padding:[50,50]
+    });
+
+}
 
     });
 
 });
+
+</script>
+
+<script>
+
+var map = L.map('map').setView([20,0],2);
+
+var markers = [];
+var portInfo = [];
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+    attribution:'OpenStreetMap'
+}).addTo(map);
+
+@foreach($ports as $port)
+
+var m = L.marker([
+    {{ $port->latitude }},
+    {{ $port->longitude }}
+])
+.addTo(map)
+.bindPopup(`
+<b>{{ $port->name }}</b><br>
+{{ $port->country }}<br>
+Size : {{ ucfirst($port->size) }}
+`);
+
+markers.push(m);
+
+portInfo.push({
+    marker: m,
+    text: "{{ strtolower($port->name.' '.$port->country) }}"
+});
+
+@endforeach
+
+window.map = map;
+window.markers = markers;
+window.portInfo = portInfo;
+
 
 </script>
 
