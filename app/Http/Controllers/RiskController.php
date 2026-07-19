@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\Country;
+use App\Models\RiskScore;
 
 class RiskController extends Controller
 {
@@ -299,22 +301,79 @@ try {
 
         $score = round(array_sum($risk) / count($risk));
 
-        if ($score <= 30) {
+        $countryDb = Country::where('cca3', $country)->first();
 
-            $level = "LOW";
+if ($countryDb) {
+
+    if ($score <= 30) {
+
+        $level = "LOW";
+        $color = "success";
+
+    } elseif ($score <= 60) {
+
+        $level = "MEDIUM";
+        $color = "warning";
+
+    } else {
+
+        $level = "HIGH";
+        $color = "danger";
+
+    }
+
+    RiskScore::updateOrCreate(
+
+        [
+            'country_id' => $countryDb->id,
+        ],
+
+        [
+            'weather_risk' => $weatherRisk,
+            'economy_risk' => $economyRisk,
+            'currency_risk' => $currencyRisk,
+            'news_risk' => $newsRisk,
+            'port_risk' => $portRisk,
+            'overall_risk' => $score,
+            'risk_level' => $level,
+        ]
+
+    );
+
+    $riskDb = RiskScore::where('country_id', $countryDb->id)->first();
+
+    if ($riskDb) {
+
+        $risk = [
+
+            'weather' => $riskDb->weather_risk,
+            'economy' => $riskDb->economy_risk,
+            'currency' => $riskDb->currency_risk,
+            'news' => $riskDb->news_risk,
+            'port' => $riskDb->port_risk,
+
+        ];
+
+        $score = $riskDb->overall_risk;
+        $level = $riskDb->risk_level;
+
+        if ($level == "LOW") {
+
             $color = "success";
 
-        } elseif ($score <= 60) {
+        } elseif ($level == "MEDIUM") {
 
-            $level = "MEDIUM";
             $color = "warning";
 
         } else {
 
-            $level = "HIGH";
             $color = "danger";
 
         }
+
+    }
+
+}
 
         $updatedAt = now()->format('d M Y H:i');
 
