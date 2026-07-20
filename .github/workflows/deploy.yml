@@ -40,6 +40,8 @@ jobs:
           username: synf6654
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
+          protocol: ftp
+          timeout: 60000
           local-dir: ./
           server-dir: public_html/anggun/
           exclude: |
