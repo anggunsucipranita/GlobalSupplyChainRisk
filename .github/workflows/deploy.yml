@@ -1,0 +1,63 @@
+name: Deploy Web to FTP (Subdomain anggun)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: 🚀 Build and Deploy via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, mysql, zip
+
+      - name: 📦 Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-progress --no-interaction
+
+      - name: 🛠️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install npm dependencies & build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: 📂 Sync files to FTP Server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.synectra.xyz
+          username: synf6654
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          local-dir: ./
+          server-dir: public_html/anggun/
+          exclude: |
+            **/node_modules/**
+            **/.git/**
+            **/.github/**
+            **/tests/**
+            **/storage/logs/**
+            .env
+            .env.example
+            README.md
+            package.json
+            package-lock.json
+            vite.config.js
+            tailwind.config.js
+            postcss.config.js
+            phpunit.xml
+            .editorconfig
+            .gitattributes
+            .styleci.yml
+            CHANGELOG.md
