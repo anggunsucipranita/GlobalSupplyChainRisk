@@ -36,7 +36,7 @@ jobs:
       - name: 📂 Sync files to FTP Server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.synectra.xyz
+          server: digul.rumahweb.org
           username: synf6654
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
