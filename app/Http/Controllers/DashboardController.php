@@ -157,7 +157,7 @@ if ($countryData) {
 
 if (!$economy) {
 
-    $economy = (object)[
+    $economy = new Economy([
 
         'gdp' => null,
 
@@ -169,7 +169,7 @@ if (!$economy) {
 
         'import' => null,
 
-    ];
+    ]);
 
 }
 

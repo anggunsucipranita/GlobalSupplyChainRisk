@@ -91,7 +91,7 @@ class EconomyController extends Controller
         if (!$economy) {
 
 
-            $economy = (object)[
+            $economy = new Economy([
 
                 'gdp' => null,
 
@@ -103,7 +103,7 @@ class EconomyController extends Controller
 
                 'import' => null,
 
-            ];
+            ]);
 
 
         }
